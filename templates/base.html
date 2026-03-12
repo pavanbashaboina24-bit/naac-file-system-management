@@ -28,17 +28,16 @@
       <a href="/dashboard" class="flex items-center gap-4 group">
         
         <div class="relative h-16 w-auto bg-transparent flex items-center transition-transform group-hover:scale-[1.02]">
-        <img 
+          <img 
             src="{{ url_for('static', filename='pragati-logo-JK-2-1536x572.png') }}" 
             alt="Pragati College Logo" 
             class="h-full w-full object-contain object-left" 
           />
         </div>
-        </div>
         
         <div class="hidden sm:block">
           <h1 class="text-lg font-extrabold tracking-tight leading-none">NAAC <span class="text-blue-600">Portal</span></h1>
-          <p class="text-[8px] uppercase tracking-widest font-black text-slate-550 mt-1">Criterion-3 Management</p>
+          <p class="text-[8px] uppercase tracking-widest font-black text-slate-400 mt-1">Criterion-3 Management</p>
         </div>
       </a>
       
@@ -124,6 +123,8 @@
 <main class="max-w-7xl mx-auto px-6 py-10">
   {% block content %}{% endblock %}
 </main>
+
+{% block scripts %}{% endblock %}
 
 {% if session.get('user') %}
 <div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end" id="chatbot-container">
@@ -376,6 +377,7 @@ function getReply(msg) {
     document.getElementById('welcome-checklist-modal').classList.add('hidden');
   }
 </script>
+
 {% endif %}
 
 <footer class="mt-16 border-t border-slate-100 bg-gradient-to-b from-white to-slate-50">
@@ -479,8 +481,6 @@ function getReply(msg) {
     </div>
   </div>
 </footer>
-
-{% block scripts %}{% endblock %}
 
 </body>
 </html>
