@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NAAC Criterion-3 Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .animate-in { animation: animIn 0.4s ease both; }
+    @keyframes animIn { from { opacity:0; transform:translateY(12px);} to { opacity:1; transform:translateY(0);} }
+    
+    /* Custom Scrollbar for Modal Content */
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f8fafc] text-slate-900">
+
+{% if session.get('user') %}
+<header class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/dashboard" class="flex items-center gap-4 group">
+        
+        <div class="relative h-16 w-auto bg-transparent flex items-center transition-transform group-hover:scale-[1.02]">
+          <img 
+            src="{{ url_for('static', filename='pragati-logo-JK-2-1536x572.png') }}" 
+            alt="Pragati College Logo" 
+            class="h-full w-full object-contain object-left" 
+          />
+        </div>
+        
+        <div class="hidden sm:block">
+          <h1 class="text-lg font-extrabold tracking-tight leading-none">NAAC <span class="text-blue-600">Portal</span></h1>
+          <p class="text-[8px] uppercase tracking-widest font-black text-slate-550 mt-1">Criterion-3 Management</p>
+        </div>
+      </a>
+      
+      <div class="hidden md:block w-px h-10 bg-slate-200 mx-2"></div>
+      
+      <div class="hidden md:flex flex-col justify-center">
+        <span class="text-[8px] font-black uppercase tracking-[0.25em] text-blue-400 leading-none">Dept. of</span>
+        <span class="text-sm font-black uppercase tracking-wide bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent leading-tight mt-0.5">Computer Science &amp; Engineering</span>
+      </div>
+    </div>
+    
+    <nav class="flex items-center gap-2">
+      {% if session.get('role') == 'admin' %}
+        <a href="/admin" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+          Management
+        </a>
+      {% elif session.get('role') == 'operator' %}
+        <a href="/bulk-upload" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          Bulk Upload
+        </a>
+        <a href="/my-submissions" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          My Submissions
+        </a>
+      {% else %}
+        <a href="/my-submissions" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          My Submissions
+        </a>
+      {% endif %}
+      <a href="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">Dashboard</a>
+      <div class="h-7 w-px bg-slate-200 mx-2"></div>
+      <div class="hidden md:flex flex-col items-end mr-2">
+        <span class="text-[10px] font-bold uppercase text-slate-400">{{ session.get('role') }}</span>
+        <span class="text-sm font-semibold text-slate-700">{{ session.get('name') }}</span>
+      </div>
+      <a href="/logout" class="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all" title="Sign Out">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </a>
+    </nav>
+  </div>
+</header>
+{% endif %}
+
+{% if session.get('user') %}
+<style>
+  .flip-card { perspective: 800px; width: 160px; height: 110px; cursor: pointer; }
+  .flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(.4,2,.6,1); }
+  .flip-card:hover .flip-inner,
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 1.25rem;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px;
+  }
+  .flip-back { transform: rotateY(180deg); }
+</style>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="max-w-7xl mx-auto px-6 mt-4 space-y-2">
+      {% for category, message in messages %}
+        <div class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-sm animate-in
+          {% if category == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200
+          {% else %}bg-red-50 text-red-800 border border-red-200{% endif %}">
+          {% if category == 'success' %}
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          {% else %}
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          {% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+  {% block content %}{% endblock %}
+</main>
+
+{% if session.get('user') %}
+<div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end" id="chatbot-container">
+  <div id="chat-window" class="hidden w-[380px] h-[540px] bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden flex flex-col mb-4">
+    <div class="bg-slate-900 p-6 text-white flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-blue-600 rounded-2xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-black text-xs tracking-widest uppercase">Portal AI Guide</h3>
+          <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest mt-0.5">Criterion-3 Knowledge Engine</p>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
+      <div class="flex justify-start">
+        <div class="max-w-[85%] p-4 rounded-[1.5rem] rounded-tl-none text-sm font-semibold bg-white border text-slate-700 shadow-sm">
+          👋 Greetings! I am the Criterion-3 AI Assistant.<br><br>Describe your document and I'll give you the <strong>direct upload link</strong>. Or type <strong>"help"</strong> to see all criteria.
+        </div>
+      </div>
+    </div>
+    <div class="p-4 bg-white border-t">
+      <div class="flex gap-2 bg-slate-50 p-2 rounded-2xl border-2 border-slate-100 focus-within:border-blue-600 transition-all">
+        <input type="text" id="chat-input"
+          class="flex-1 bg-transparent border-none outline-none px-3 text-sm font-semibold placeholder:text-slate-300"
+          placeholder="e.g. DST grant, UGC paper, MoU..."
+          onkeydown="if(event.key==='Enter') sendMessage()"/>
+        <button onclick="sendMessage()" class="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <button onclick="toggleChat()" class="p-5 bg-slate-900 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all relative">
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    <div id="notif-dot" class="absolute top-0 right-0 w-4 h-4 bg-blue-500 border-2 border-slate-900 rounded-full animate-pulse"></div>
+  </button>
+</div>
+
+<script>
+function toggleChat() {
+  const win = document.getElementById('chat-window');
+  const dot = document.getElementById('notif-dot');
+  win.classList.toggle('hidden');
+  dot.classList.add('hidden');
+}
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  appendMessage(msg, 'user');
+  input.value = '';
+  showTyping();
+  setTimeout(() => { removeTyping(); appendMessage(getReply(msg), 'ai'); }, 800);
+}
+function appendMessage(text, sender) {
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+  div.innerHTML = `<div class="max-w-[85%] p-4 rounded-[1.5rem] text-sm font-semibold shadow-sm leading-relaxed
+    ${sender === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border text-slate-700 rounded-tl-none'}">${text}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function showTyping() {
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.id = 'typing-indicator';
+  div.className = 'flex justify-start';
+  div.innerHTML = `<div class="bg-white border p-4 rounded-[1.5rem] rounded-tl-none flex gap-1 shadow-sm">
+    <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+    <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay:0.2s"></div>
+    <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay:0.4s"></div>
+  </div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+function btn(url, label) {
+  return `<a href="${url}" class="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black hover:bg-blue-700">📤 ${label} →</a>`;
+}
+function getReply(msg) {
+  const q = msg.toLowerCase();
+  if (q.includes('dashboard') || q.includes('home'))
+    return '🏠 Go to <a href="/dashboard" class="text-blue-600 underline font-black">Dashboard</a> to see all 5 criteria.';
+  if (q.includes('bulk') || q.includes('multiple file') || q.includes('bulk upload'))
+    return '📦 Operators can upload multiple files at once →<br>' + btn('/bulk-upload', 'Bulk Upload');
+  if (q.includes('my submission') || q.includes('my upload') || q.includes('my document') || q.includes('status') || q.includes('track'))
+    return '📋 Track your submissions here →<br>' + btn('/my-submissions', 'My Submissions');
+  if (q.includes('approve') || q.includes('verify') || q.includes('pending') || q.includes('reject') || q.includes('admin panel'))
+    return '🔐 Admin verifies documents at →<br>' + btn('/admin', 'Verification Hub') + '<br><br><small>Faculty/Operator uploads stay <strong>Pending</strong> until admin approves.</small>';
+  if (q.includes('grant') || q.includes('funded project') || q.includes('sponsored project') || q.includes('seed money') || q.includes('government fund') || q.includes('dst') || q.includes('csir') || q.includes('icmr'))
+    return '📁 <strong>Criterion 3.1.1</strong> — Grants received from Govt/Non-Govt agencies<br>' + btn('/upload/3.1/3.1.1', 'Upload 3.1.1');
+  if (q.includes('research guide') || q.includes('phd guide') || q.includes('phd supervisor') || q.includes('recognized guide'))
+    return '📁 <strong>Criterion 3.1.2</strong> — Teachers recognized as research guides<br>' + btn('/upload/3.1/3.1.2', 'Upload 3.1.2');
+  if (q.includes('research project') || q.includes('department project') || q.includes('funded department'))
+    return '📁 <strong>Criterion 3.1.3</strong> — Departments having research projects<br>' + btn('/upload/3.1/3.1.3', 'Upload 3.1.3');
+  if (q.includes('3.1') || q.includes('research promotion'))
+    return '📂 <strong>Criterion 3.1 — Research Promotion</strong><br><br>' +
+      '• <a href="/upload/3.1/3.1.1" class="text-blue-600 underline font-black">3.1.1</a> — Grants from Govt/Non-Govt<br>' +
+      '• <a href="/upload/3.1/3.1.2" class="text-blue-600 underline font-black">3.1.2</a> — Teachers as Research Guides<br>' +
+      '• <a href="/upload/3.1/3.1.3" class="text-blue-600 underline font-black">3.1.3</a> — Departments with Research Projects<br><br>' +
+      btn('/criterion/3.1', 'Browse 3.1');
+  if (q.includes('incubat') || q.includes('startup') || q.includes('innovation centre') || q.includes('ecosystem') || q.includes('tbi'))
+    return '📁 <strong>Criterion 3.2.1</strong> — Ecosystem for Innovations / Incubation Centre<br>' + btn('/upload/3.2/3.2.1', 'Upload 3.2.1');
+  if (q.includes('ipr') || q.includes('patent') || q.includes('intellectual property') || q.includes('industry-academia') || q.includes('workshop') || q.includes('seminar') || q.includes('fdp'))
+    return '📁 <strong>Criterion 3.2.2</strong> — Workshops/Seminars on IPR & Industry-Academia<br>' + btn('/upload/3.2/3.2.2', 'Upload 3.2.2');
+  if (q.includes('3.2') || q.includes('innovation ecosystem'))
+    return '📂 <strong>Criterion 3.2 — Innovation Ecosystem</strong><br><br>' +
+      '• <a href="/upload/3.2/3.2.1" class="text-blue-600 underline font-black">3.2.1</a> — Incubation Centre & Innovations<br>' +
+      '• <a href="/upload/3.2/3.2.2" class="text-blue-600 underline font-black">3.2.2</a> — IPR Workshops & Industry-Academia<br><br>' +
+      btn('/criterion/3.2', 'Browse 3.2');
+  if (q.includes('code of ethics') || q.includes('plagiarism') || q.includes('research ethics') || q.includes('anti plagiarism'))
+    return '📁 <strong>Criterion 3.3.1</strong> — Implementation of Code of Ethics<br>' + btn('/upload/3.3/3.3.1', 'Upload 3.3.1');
+  if (q.includes('phd register') || q.includes('phd enroll') || q.includes('doctorate') || q.includes('ph.d') || (q.includes('phd') && !q.includes('guide')))
+    return '📁 <strong>Criterion 3.3.2</strong> — No. of Ph.Ds registered per eligible teacher<br>' + btn('/upload/3.3/3.3.2', 'Upload 3.3.2');
+  if (q.includes('journal') || q.includes('ugc') || q.includes('publication') || q.includes('research paper') || q.includes('scopus') || q.includes('wos') || q.includes('paper publish'))
+    return '📁 <strong>Criterion 3.3.3</strong> — Research papers in UGC-notified Journals<br>' + btn('/upload/3.3/3.3.3', 'Upload 3.3.3');
+  if (q.includes('3.3') || q.includes('research publication'))
+    return '📂 <strong>Criterion 3.3 — Research Publications</strong><br><br>' +
+      '• <a href="/upload/3.3/3.3.1" class="text-blue-600 underline font-black">3.3.1</a> — Code of Ethics<br>' +
+      '• <a href="/upload/3.3/3.3.2" class="text-blue-600 underline font-black">3.3.2</a> — Ph.D Registrations<br>' +
+      '• <a href="/upload/3.3/3.3.3" class="text-blue-600 underline font-black">3.3.3</a> — UGC Journal Papers<br><br>' +
+      btn('/criterion/3.3', 'Browse 3.3');
+  if (q.includes('neighborhood') || q.includes('community activit') || q.includes('village') || q.includes('community service'))
+    return '📁 <strong>Criterion 3.4.1</strong> — Extension activities in neighborhood community<br>' + btn('/upload/3.4/3.4.1', 'Upload 3.4.1');
+  if (q.includes('extension award') || q.includes('award for extension') || q.includes('outreach award'))
+    return '📁 <strong>Criterion 3.4.2</strong> — Awards received for extension activities<br>' + btn('/upload/3.4/3.4.2', 'Upload 3.4.2');
+  if (q.includes('nss') || q.includes('ncc') || q.includes('red cross') || q.includes('outreach program') || q.includes('volunteer') || q.includes('blood donation') || q.includes('health camp'))
+    return '📁 <strong>Criterion 3.4.3</strong> — Extension & Outreach programs (NSS/NCC/Red Cross)<br>' + btn('/upload/3.4/3.4.3', 'Upload 3.4.3');
+  if (q.includes('3.4') || q.includes('extension activit'))
+    return '📂 <strong>Criterion 3.4 — Extension Activities</strong><br><br>' +
+      '• <a href="/upload/3.4/3.4.1" class="text-blue-600 underline font-black">3.4.1</a> — Neighborhood Community Activities<br>' +
+      '• <a href="/upload/3.4/3.4.2" class="text-blue-600 underline font-black">3.4.2</a> — Awards for Extension<br>' +
+      '• <a href="/upload/3.4/3.4.3" class="text-blue-600 underline font-black">3.4.3</a> — NSS/NCC/Red Cross Programs<br><br>' +
+      btn('/criterion/3.4', 'Browse 3.4');
+  if (q.includes('collaborat') || q.includes('faculty exchange') || q.includes('student exchange') || q.includes('joint research'))
+    return '📁 <strong>Criterion 3.5.1</strong> — Collaborative activities for research & faculty exchange<br>' + btn('/upload/3.5/3.5.1', 'Upload 3.5.1');
+  if (q.includes('mou') || q.includes('linkage') || q.includes('internship') || q.includes('on-the-job') || q.includes('training program'))
+    return '📁 <strong>Criterion 3.5.2</strong> — Linkages for internship & on-the-job training<br>' + btn('/upload/3.5/3.5.2', 'Upload 3.5.2');
+  if (q.includes('3.5') || q.includes('collaboration'))
+    return '📂 <strong>Criterion 3.5 — Collaboration</strong><br><br>' +
+      '• <a href="/upload/3.5/3.5.1" class="text-blue-600 underline font-black">3.5.1</a> — Research & Faculty Exchange<br>' +
+      '• <a href="/upload/3.5/3.5.2" class="text-blue-600 underline font-black">3.5.2</a> — Internship & Training Linkages<br><br>' +
+      btn('/criterion/3.5', 'Browse 3.5');
+  if (q.includes('format') || q.includes('file type') || q.includes('size') || q.includes('how to upload') || q.includes('guideline') || q.includes('checklist'))
+    return '📎 <strong>Upload Guidelines:</strong><br><br>' +
+      '✅ Accepted: PDF, XLS, XLSX, JPG, PNG<br>' +
+      '✅ Max file size: <strong>5MB</strong><br>' +
+      '✅ Must have official seal & signature<br>' +
+      '✅ Name format: <em>3.1.1_2024_Title.pdf</em><br><br>' +
+      '<a href="#" onclick="document.getElementById(\'welcome-checklist-modal\').classList.remove(\'hidden\')" class="text-blue-600 underline font-black">📋 View Full Checklist</a>';
+  if (q.includes('help') || q.includes('all criteria') || q.includes('list') || q.includes('show all') || q.length < 4)
+    return '📚 <strong>Criterion-3 has 5 sections:</strong><br><br>' +
+      '• <a href="/criterion/3.1" class="text-blue-600 underline font-black">3.1</a> — Research Promotion<br>' +
+      '• <a href="/criterion/3.2" class="text-blue-600 underline font-black">3.2</a> — Innovation Ecosystem<br>' +
+      '• <a href="/criterion/3.3" class="text-blue-600 underline font-black">3.3</a> — Research Publications<br>' +
+      '• <a href="/criterion/3.4" class="text-blue-600 underline font-black">3.4</a> — Extension Activities<br>' +
+      '• <a href="/criterion/3.5" class="text-blue-600 underline font-black">3.5</a> — Collaboration<br><br>' +
+      'Describe your document and I\'ll give you the direct link!';
+  return '🤔 I couldn\'t find a match. Try keywords like:<br><br>' +
+    '<em>"DST grant"</em>, <em>"UGC journal"</em>, <em>"NSS camp"</em>, <em>"MoU"</em>, <em>"PhD registration"</em>, <em>"IPR workshop"</em><br><br>' +
+    'Or type <strong>"help"</strong> to see all criteria.';
+}
+</script>
+
+<div id="welcome-checklist-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden animate-in flex flex-col">
+
+    <div class="p-6 md:p-10 bg-gradient-to-br from-slate-900 to-blue-900 text-white flex justify-between items-start shrink-0">
+      <div>
+        <div class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2 md:mb-3">Welcome to NAAC Portal</div>
+        <h3 class="text-xl md:text-2xl font-black mb-1">IQAC Checklist</h3>
+        <p class="text-blue-300 text-xs md:text-sm font-medium">Standard Operating Procedure for Criterion-3</p>
+      </div>
+      <button onclick="closeChecklist()" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 custom-scrollbar">
+        <div class="px-6 md:px-10 pt-6 flex items-center gap-4">
+          <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <div>
+            <div class="font-black text-slate-900 text-sm md:text-base">Hello, {{ session.get('name') }}! 👋</div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ session.get('role') }} — Please review guidelines</div>
+          </div>
+        </div>
+
+        <div class="p-6 md:p-10 space-y-5">
+          {% for step in [
+            ('Authentication', 'All documents must have a visible seal of the institution and principal\'s signature.'),
+            ('Format Requirements', 'Upload only PDF files. Excel links should be added in the Additional Links field.'),
+            ('File Naming', 'Use the format: [MetricID]_[Year]_[Title].pdf — e.g., 3.1.1_2024_DSTGrant.pdf'),
+            ('Data Consistency', 'Ensure amounts and dates match the information provided in the portal fields.'),
+            ('Verification Process', 'After submission, records go to Pending. Admin will verify within 48 hours.')
+          ] %}
+          <div class="flex gap-4 md:gap-5 items-start">
+            <div class="w-8 h-8 md:w-10 md:h-10 shrink-0 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-black text-sm">0{{ loop.index }}</div>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">{{ step[0] }}</h4>
+              <p class="text-slate-500 text-xs md:text-sm mt-0.5 leading-relaxed">{{ step[1] }}</p>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 text-amber-800 text-[10px] md:text-xs font-bold">
+            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Documents with missing signatures or blurred content will be automatically rejected.
+          </div>
+        </div>
+    </div>
+
+    <div class="px-6 md:px-10 py-6 md:pb-10 bg-white border-t border-slate-50 flex flex-col md:flex-row items-center gap-4 shrink-0">
+      <button onclick="closeChecklist()"
+        class="w-full md:flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+        I Understand — Let's Begin
+      </button>
+      <label class="flex items-center gap-2 text-[10px] md:text-xs font-bold text-slate-400 cursor-pointer shrink-0">
+        <input type="checkbox" id="dont-show-again" class="w-4 h-4 accent-blue-600"/>
+        Don't show again
+      </label>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const CHECKLIST_KEY = 'naac_checklist_{{ session.get("user") }}';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem(CHECKLIST_KEY)) {
+      document.getElementById('welcome-checklist-modal').classList.remove('hidden');
+    }
+  });
+
+  function closeChecklist() {
+    if (document.getElementById('dont-show-again').checked) {
+      localStorage.setItem(CHECKLIST_KEY, 'true');
+    }
+    document.getElementById('welcome-checklist-modal').classList.add('hidden');
+  }
+</script>
+{% endif %}
+
+<footer class="mt-16 border-t border-slate-100 bg-gradient-to-b from-white to-slate-50">
+  <div class="max-w-7xl mx-auto px-6 py-14">
+    <div class="flex flex-col items-center gap-10">
+
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-xl text-white shadow-lg shadow-blue-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 11h6M9 15h4"/></svg>
+        </div>
+        <div>
+          <div class="font-extrabold text-slate-900 tracking-tight">NAAC <span class="text-blue-600">Portal</span></div>
+          <div class="text-[9px] uppercase tracking-[0.25em] font-bold text-slate-400">Criterion-3 Management System</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 w-full max-w-2xl">
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+        <span class="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">Developed by CSE Department</span>
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+      </div>
+
+      <p class="text-xs text-slate-400 font-semibold -mt-4 flex items-center gap-2">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+        Hover / tap a card to reveal Roll Number
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-6">
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front bg-gradient-to-br from-blue-600 to-indigo-700 shadow-xl shadow-blue-200">
+              <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg">KE</div>
+              <div class="text-white font-black text-[11px] uppercase tracking-widest">Developer 01</div>
+              <div class="text-blue-200 text-[9px] font-bold uppercase tracking-wider">CSE · 2024</div>
+            </div>
+            <div class="flip-back bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl">
+              <div class="text-blue-400 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Roll Number</div>
+              <div class="text-white font-black text-base tracking-widest">24A31A05KE</div>
+              <div class="w-8 h-0.5 bg-blue-500 rounded-full mt-1"></div>
+              <div class="text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-1">CSE Dept</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front bg-gradient-to-br from-violet-600 to-purple-700 shadow-xl shadow-violet-200">
+              <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg">JC</div>
+              <div class="text-white font-black text-[11px] uppercase tracking-widest">Developer 02</div>
+              <div class="text-violet-200 text-[9px] font-bold uppercase tracking-wider">CSE · 2024</div>
+            </div>
+            <div class="flip-back bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl">
+              <div class="text-violet-400 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Roll Number</div>
+              <div class="text-white font-black text-base tracking-widest">24A31A05JC</div>
+              <div class="w-8 h-0.5 bg-violet-500 rounded-full mt-1"></div>
+              <div class="text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-1">CSE Dept</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front bg-gradient-to-br from-emerald-500 to-teal-600 shadow-xl shadow-emerald-200">
+              <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg">IU</div>
+              <div class="text-white font-black text-[11px] uppercase tracking-widest">Developer 03</div>
+              <div class="text-emerald-200 text-[9px] font-bold uppercase tracking-wider">CSE · 2024</div>
+            </div>
+            <div class="flip-back bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl">
+              <div class="text-emerald-400 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Roll Number</div>
+              <div class="text-white font-black text-base tracking-widest">24A31A05IU</div>
+              <div class="w-8 h-0.5 bg-emerald-500 rounded-full mt-1"></div>
+              <div class="text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-1">CSE Dept</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front bg-gradient-to-br from-rose-500 to-pink-600 shadow-xl shadow-rose-200">
+              <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg">KZ</div>
+              <div class="text-white font-black text-[11px] uppercase tracking-widest">Developer 04</div>
+              <div class="text-rose-200 text-[9px] font-bold uppercase tracking-wider">CSE · 2024</div>
+            </div>
+            <div class="flip-back bg-gradient-to-br from-slate-800 to-slate-900 shadow-xl">
+              <div class="text-rose-400 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Roll Number</div>
+              <div class="text-white font-black text-base tracking-widest">24A31A05KZ</div>
+              <div class="w-8 h-0.5 bg-rose-500 rounded-full mt-1"></div>
+              <div class="text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-1">CSE Dept</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-400">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        © 2024–25 NAAC Criterion-3 Portal · Department of CSE · All rights reserved
+      </div>
+
+    </div>
+  </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>
