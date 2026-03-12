@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -364,14 +365,12 @@ function getReply(msg) {
   const CHECKLIST_KEY = 'naac_checklist_{{ session.get("user") }}';
 
   window.addEventListener('DOMContentLoaded', () => {
-    // If preference is not set, show the modal automatically once
     if (!localStorage.getItem(CHECKLIST_KEY)) {
       document.getElementById('welcome-checklist-modal').classList.remove('hidden');
     }
   });
 
   function closeChecklist() {
-    // Save preference only if "Don't show again" is checked
     if (document.getElementById('dont-show-again').checked) {
       localStorage.setItem(CHECKLIST_KEY, 'true');
     }
@@ -482,8 +481,5 @@ function getReply(msg) {
     </div>
   </div>
 </footer>
-
-{% block scripts %}{% endblock %}
-
 </body>
 </html>
