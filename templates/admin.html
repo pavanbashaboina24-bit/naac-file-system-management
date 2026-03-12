@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-10 animate-in">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div>
+      <a href="/dashboard" class="inline-flex items-center gap-2 text-blue-600 font-black text-xs tracking-widest uppercase mb-4 hover:gap-4 transition-all">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+      <h2 class="text-4xl font-black text-slate-900 tracking-tight">Verification Hub</h2>
+      <p class="text-slate-500 font-medium italic">Quality Assurance Assessment Desk</p>
+    </div>
+    <div class="relative w-full lg:w-80">
+      <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input type="text" id="search-input" placeholder="Search documents..." onkeyup="filterTable()"
+        class="w-full pl-14 pr-6 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:border-blue-600 outline-none font-bold shadow-sm transition-all"/>
+    </div>
+  </div>
+
+  <!-- ✅ Pending approval banner -->
+  {% set pending_count = submissions | selectattr("status", "equalto", "pending") | list | length %}
+  {% if pending_count > 0 %}
+  <div class="bg-amber-50 border border-amber-200 rounded-[2rem] p-6 flex items-center gap-5">
+    <div class="p-3 bg-amber-100 text-amber-600 rounded-2xl shrink-0">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+    </div>
+    <div>
+      <div class="font-black text-amber-800 text-base">{{ pending_count }} submission{{ 's' if pending_count > 1 }} awaiting your approval</div>
+      <div class="text-amber-600 text-xs font-semibold mt-0.5">Files are held and will only be uploaded to storage once you approve them.</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[900px]" id="submissions-table">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-100">
+            <th class="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-widest">Metric</th>
+            <th class="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-widest">Document Details</th>
+            <th class="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">Status</th>
+            <th class="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-widest">Submitted By</th>
+            <th class="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          {% if not submissions %}
+          <tr>
+            <td colspan="5" class="px-8 py-20 text-center text-slate-400 font-bold italic">No documentation found in repository.</td>
+          </tr>
+          {% endif %}
+          {% for sub in submissions %}
+          <!-- ✅ Pending non-admin rows కి amber highlight -->
+          <tr class="hover:bg-blue-50/30 transition-colors group submission-row
+            {% if sub.status == 'pending' and sub.submitted_by_role != 'admin' %}bg-amber-50/40{% endif %}"
+            data-search="{{ sub.title|lower }} {{ sub.sub_id|lower }}">
+            <td class="px-8 py-6">
+              <span class="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl border border-slate-100 font-black text-blue-600 shadow-sm text-xs">{{ sub.sub_id }}</span>
+            </td>
+            <td class="px-8 py-6">
+              <div class="font-black text-slate-900 group-hover:text-blue-600 uppercase tracking-tight">{{ sub.title }}</div>
+              <div class="text-[11px] text-slate-400 font-bold mt-1 uppercase">{{ sub.agency }} • {{ sub.year }}</div>
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1 text-[9px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md border">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  {{ sub.file_name }}
+                </span>
+                <!-- ✅ File held badge — faculty/operator pending submissions కి -->
+                {% if sub.status == 'pending' and sub.submitted_by_role != 'admin' and sub.file_name != 'Link only' %}
+                <span class="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded-md border border-amber-200">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  Held — awaiting approval
+                </span>
+                {% endif %}
+              </div>
+            </td>
+            <td class="px-8 py-6 text-center">
+              <span class="px-5 py-2 rounded-full text-[10px] font-black ring-1 uppercase tracking-widest
+                {% if sub.status == 'approved' %}bg-emerald-50 text-emerald-700 ring-emerald-200
+                {% elif sub.status == 'rejected' %}bg-red-50 text-red-700 ring-red-200
+                {% else %}bg-amber-50 text-amber-700 ring-amber-200{% endif %}">
+                {{ sub.status }}
+              </span>
+            </td>
+            <td class="px-8 py-6">
+              <div class="text-xs font-black text-slate-700">{{ sub.user_name }}</div>
+              <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-0.5">{{ sub.timestamp[:10] }}</div>
+              <!-- ✅ Role badge -->
+              <span class="mt-1.5 inline-block px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest
+                {% if sub.submitted_by_role == 'admin' %}bg-blue-100 text-blue-700
+                {% elif sub.submitted_by_role == 'faculty' %}bg-violet-100 text-violet-700
+                {% else %}bg-slate-100 text-slate-500{% endif %}">
+                {{ sub.submitted_by_role or 'unknown' }}
+              </span>
+            </td>
+            <td class="px-8 py-6 text-right">
+              <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {% if sub.status == 'pending' %}
+                <form method="POST" action="/admin/update/{{ sub.id }}" class="inline">
+                  <input type="hidden" name="status" value="approved"/>
+                  <!-- ✅ Faculty/operator కి "Approve & Upload", admin కి సాధారణ "Approve" -->
+                  <button type="submit"
+                    class="flex items-center gap-1.5 px-3 h-10 bg-white text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-xl transition-all shadow-sm border border-emerald-100 text-[10px] font-black uppercase tracking-wide">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {% if sub.submitted_by_role != 'admin' %}Approve & Upload{% else %}Approve{% endif %}
+                  </button>
+                </form>
+                <form method="POST" action="/admin/update/{{ sub.id }}" class="inline">
+                  <input type="hidden" name="status" value="rejected"/>
+                  <button type="submit" title="Reject"
+                    class="w-10 h-10 flex items-center justify-center bg-white text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm border border-red-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  </button>
+                </form>
+                {% endif %}
+                {% if sub.file_url %}
+                <a href="{{ sub.file_url }}" target="_blank" title="Download"
+                  class="w-10 h-10 flex items-center justify-center bg-white text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm border border-blue-100">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.submission-row').forEach(row => {
+    row.style.display = row.dataset.search.includes(q) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}
