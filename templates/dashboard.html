@@ -1,0 +1,144 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-10 animate-in">
+
+  <!-- Header Row -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div>
+      <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-3">Institutional Dashboard</span>
+      <h2 class="text-4xl font-black text-slate-900 tracking-tight">Criterion 3: Research</h2>
+      <p class="text-slate-500 mt-1 font-medium">Research, Innovations and Extension Metrics</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="flex flex-wrap gap-3">
+
+      <!-- Total -->
+      <div class="p-4 rounded-2xl ring-1 ring-blue-100 bg-blue-50 text-blue-700 flex items-center gap-4 shadow-sm min-w-[140px]">
+        <div class="p-2.5 bg-white rounded-xl shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7"/></svg>
+        </div>
+        <div>
+          <div class="text-[10px] font-black uppercase opacity-60">
+            {% if session.get('role') == 'admin' %}All Submissions{% else %}My Submissions{% endif %}
+          </div>
+          <div class="text-xl font-black">{{ stats.total }}</div>
+        </div>
+      </div>
+
+      <!-- Approved -->
+      <div class="p-4 rounded-2xl ring-1 ring-emerald-100 bg-emerald-50 text-emerald-700 flex items-center gap-4 shadow-sm min-w-[140px]">
+        <div class="p-2.5 bg-white rounded-xl shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div class="text-[10px] font-black uppercase opacity-60">Approved</div>
+          <div class="text-xl font-black">{{ stats.approved }}</div>
+        </div>
+      </div>
+
+      <!-- Pending — admin కి "Pending Approvals", faculty/operator కి "My Pending" -->
+      <div class="p-4 rounded-2xl ring-1 ring-amber-100 bg-amber-50 text-amber-700 flex items-center gap-4 shadow-sm min-w-[140px]">
+        <div class="p-2.5 bg-white rounded-xl shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/></svg>
+        </div>
+        <div>
+          <div class="text-[10px] font-black uppercase opacity-60">
+            {% if session.get('role') == 'admin' %}Pending Approvals{% else %}My Pending{% endif %}
+          </div>
+          <div class="text-xl font-black">{{ stats.pending }}</div>
+        </div>
+      </div>
+
+      <!-- Rejected — faculty/operator కి మాత్రమే చూపించు -->
+      {% if session.get('role') != 'admin' and stats.rejected > 0 %}
+      <div class="p-4 rounded-2xl ring-1 ring-red-100 bg-red-50 text-red-700 flex items-center gap-4 shadow-sm min-w-[140px]">
+        <div class="p-2.5 bg-white rounded-xl shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div class="text-[10px] font-black uppercase opacity-60">Rejected</div>
+          <div class="text-xl font-black">{{ stats.rejected }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- Criteria Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for key, crit in criteria.items() %}
+    <a href="/criterion/{{ key }}" class="group flex flex-col items-start p-8 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-2 transition-all text-left relative overflow-hidden">
+      <div class="p-4 bg-slate-50 text-slate-400 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors mb-6 shadow-inner">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <span class="text-blue-600 font-black text-xs mb-2 uppercase tracking-[0.2em]">{{ key }} Section</span>
+      <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">{{ crit.title }}</h3>
+      <p class="text-slate-500 text-sm font-medium leading-relaxed mb-6">{{ crit.desc }}</p>
+      <div class="mt-auto flex items-center gap-2 text-blue-600 font-black text-xs uppercase tracking-widest group-hover:gap-4 transition-all">
+        Browse Metrics
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Info Banner -->
+  <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
+    <div class="p-6 bg-blue-50 text-blue-600 rounded-3xl">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <div class="flex-1">
+      <h4 class="text-xl font-bold text-slate-900">Submission Guidelines</h4>
+      <p class="text-slate-500 text-sm mt-1 leading-relaxed">All uploaded files must be in PDF format and include official signatures/seals. Records without authentication will be flagged during IQAC verification.</p>
+    </div>
+    <a href="#" onclick="document.getElementById('guidelines-modal').classList.remove('hidden'); return false;"
+       class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+      View Checklist
+    </a>
+  </div>
+
+</div>
+
+<!-- Guidelines Modal -->
+<div id="guidelines-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden">
+    <div class="p-10 bg-gradient-to-br from-slate-900 to-blue-900 text-white flex justify-between items-start">
+      <div>
+        <h3 class="text-2xl font-black mb-1">IQAC Checklist</h3>
+        <p class="text-blue-300 text-sm font-medium">Standard Operating Procedure for Criterion-3</p>
+      </div>
+      <button onclick="document.getElementById('guidelines-modal').classList.add('hidden')" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="p-10 space-y-6">
+      {% for step in [
+        ('Authentication', 'All documents must have a visible seal of the institution and principal\'s signature.'),
+        ('Format Requirements', 'Upload only PDF files. Excel links should be added in the Additional Links field.'),
+        ('File Naming', 'Use the format: [MetricID]_[Year]_[Title].pdf — e.g., 3.1.1_2024_DSTGrant.pdf'),
+        ('Data Consistency', 'Ensure amounts and dates match the information provided in the portal fields.'),
+        ('Verification Process', 'After submission, records go to Pending. Admin will verify within 48 hours.')
+      ] %}
+      <div class="flex gap-5 items-start">
+        <div class="w-10 h-10 shrink-0 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-black text-sm">0{{ loop.index }}</div>
+        <div>
+          <h4 class="font-black text-slate-900">{{ step[0] }}</h4>
+          <p class="text-slate-500 text-sm mt-1">{{ step[1] }}</p>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="p-5 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 text-amber-800 text-xs font-bold">
+        <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Documents with missing signatures or blurred content will be automatically rejected by the audit committee.
+      </div>
+    </div>
+    <div class="px-10 pb-10">
+      <button onclick="document.getElementById('guidelines-modal').classList.add('hidden')" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">I Understand</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
