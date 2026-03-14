@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from functools import wraps
 from datetime import datetime
 import base64
@@ -103,7 +104,6 @@ def criterion(crit_key):
 @app.route("/upload/<crit_key>/<sub_id>", methods=["GET", "POST"])
 @login_required
 def upload(crit_key, sub_id):
-    # ✅ Operator కి single upload లేదు — bulk upload కి redirect
     if session.get("role") == "operator":
         flash("Operators must use Bulk Upload.", "error")
         return redirect(url_for("bulk_upload"))
@@ -200,7 +200,6 @@ def bulk_upload():
         sub_id   = request.form.get("sub_id")
         agency   = request.form.get("agency", "").strip()
         year     = request.form.get("year", "2024-25")
-        # ✅ ప్రతి file కి title & link
         titles   = request.form.getlist("titles")
         links    = request.form.getlist("links")
 
@@ -235,8 +234,6 @@ def bulk_upload():
                 continue
 
             file_data_b64 = base64.b64encode(file_bytes).decode("utf-8")
-
-            # ✅ index బట్టి title & link తీసుకో
             title = titles[i].strip() if i < len(titles) and titles[i].strip() else file.filename.rsplit(".", 1)[0].replace("_", " ")
             link  = links[i].strip() or None if i < len(links) else None
 
@@ -270,6 +267,7 @@ def bulk_upload():
         return redirect(url_for("bulk_upload"))
 
     return render_template("bulk_upload.html", criteria=CRITERIA)
+
 @app.route("/admin")
 @login_required
 @admin_required
@@ -313,7 +311,28 @@ def update_status(sub_id):
                     return redirect(url_for("admin"))
 
     db.table("submissions").update(update_payload).eq("id", sub_id).execute()
+    flash(f"Submission {new_status} successfully.", "success")
     return redirect(url_for("admin"))
+
+# ✅ NEW — Admin file preview route
+@app.route("/admin/preview/<sub_id>")
+@login_required
+@admin_required
+def admin_preview(sub_id):
+    try:
+        result = db.table("submissions").select(
+            "file_data, file_name, file_content_type"
+        ).eq("id", sub_id).single().execute()
+        row = result.data
+        if not row or not row.get("file_data"):
+            return jsonify({"error": "No file data found for this submission."})
+        return jsonify({
+            "file_data":    row["file_data"],
+            "filename":     row["file_name"],
+            "content_type": row.get("file_content_type") or "application/octet-stream"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 @app.route("/my-submissions")
 @login_required
