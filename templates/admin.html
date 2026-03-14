@@ -18,7 +18,6 @@
     </div>
   </div>
 
-  <!-- ✅ Pending approval banner -->
   {% set pending_count = submissions | selectattr("status", "equalto", "pending") | list | length %}
   {% if pending_count > 0 %}
   <div class="bg-amber-50 border border-amber-200 rounded-[2rem] p-6 flex items-center gap-5">
@@ -51,7 +50,6 @@
           </tr>
           {% endif %}
           {% for sub in submissions %}
-          <!-- ✅ Pending non-admin rows కి amber highlight -->
           <tr class="hover:bg-blue-50/30 transition-colors group submission-row
             {% if sub.status == 'pending' and sub.submitted_by_role != 'admin' %}bg-amber-50/40{% endif %}"
             data-search="{{ sub.title|lower }} {{ sub.sub_id|lower }}">
@@ -66,7 +64,6 @@
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   {{ sub.file_name }}
                 </span>
-                <!-- ✅ File held badge — faculty/operator pending submissions కి -->
                 {% if sub.status == 'pending' and sub.submitted_by_role != 'admin' and sub.file_name != 'Link only' %}
                 <span class="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded-md border border-amber-200">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -86,7 +83,6 @@
             <td class="px-8 py-6">
               <div class="text-xs font-black text-slate-700">{{ sub.user_name }}</div>
               <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-0.5">{{ sub.timestamp[:10] }}</div>
-              <!-- ✅ Role badge -->
               <span class="mt-1.5 inline-block px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest
                 {% if sub.submitted_by_role == 'admin' %}bg-blue-100 text-blue-700
                 {% elif sub.submitted_by_role == 'faculty' %}bg-violet-100 text-violet-700
@@ -96,10 +92,32 @@
             </td>
             <td class="px-8 py-6 text-right">
               <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                <!-- ✅ VIEW button — file_data (pending) లేదా file_url (approved) ఉంటే show -->
+                {% if sub.file_data or sub.file_url %}
+                <button type="button"
+                  onclick="openPreview(this)"
+                  data-id="{{ sub.id }}"
+                  data-title="{{ sub.title | e }}"
+                  data-filename="{{ sub.file_name | e }}"
+                  data-contenttype="{{ sub.file_content_type or '' }}"
+                  data-fileurl="{{ sub.file_url or '' }}"
+                  data-hasdata="{{ 'yes' if sub.file_data else '' }}"
+                  class="w-10 h-10 flex items-center justify-center bg-white text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm border border-indigo-100"
+                  title="Preview File">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+                {% elif sub.link %}
+                <a href="{{ sub.link }}" target="_blank"
+                  class="w-10 h-10 flex items-center justify-center bg-white text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm border border-indigo-100"
+                  title="Open Link">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                {% endif %}
+
                 {% if sub.status == 'pending' %}
                 <form method="POST" action="/admin/update/{{ sub.id }}" class="inline">
                   <input type="hidden" name="status" value="approved"/>
-                  <!-- ✅ Faculty/operator కి "Approve & Upload", admin కి సాధారణ "Approve" -->
                   <button type="submit"
                     class="flex items-center gap-1.5 px-3 h-10 bg-white text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-xl transition-all shadow-sm border border-emerald-100 text-[10px] font-black uppercase tracking-wide">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -114,6 +132,7 @@
                   </button>
                 </form>
                 {% endif %}
+
                 {% if sub.file_url %}
                 <a href="{{ sub.file_url }}" target="_blank" title="Download"
                   class="w-10 h-10 flex items-center justify-center bg-white text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm border border-blue-100">
@@ -129,6 +148,45 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ FILE PREVIEW MODAL -->
+<div id="preview-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white w-full max-w-4xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col" style="max-height:90vh;">
+
+    <!-- Modal Header -->
+    <div class="bg-slate-900 px-8 py-5 flex items-center justify-between shrink-0">
+      <div>
+        <div class="text-slate-400 text-[9px] font-black uppercase tracking-[0.3em]">File Preview</div>
+        <div class="text-white font-black text-base mt-0.5" id="preview-title">Document</div>
+        <div class="text-slate-400 text-xs mt-0.5" id="preview-filename"></div>
+      </div>
+      <button onclick="closePreview()" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Modal Body — file renders here -->
+    <div class="flex-1 overflow-auto bg-slate-100 flex items-center justify-center" id="preview-body" style="min-height:400px;">
+      <div class="text-slate-400 font-bold text-sm">Loading preview...</div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-8 py-4 bg-white border-t border-slate-100 flex items-center justify-between shrink-0">
+      <span class="text-xs text-slate-400 font-semibold" id="preview-type-label"></span>
+      <div class="flex gap-3">
+        <a id="preview-download-btn" href="#" target="_blank"
+          class="hidden px-5 py-2.5 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all">
+          Open / Download
+        </a>
+        <button onclick="closePreview()"
+          class="px-5 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 {% block scripts %}
 <script>
@@ -137,6 +195,82 @@ function filterTable() {
   document.querySelectorAll('.submission-row').forEach(row => {
     row.style.display = row.dataset.search.includes(q) ? '' : 'none';
   });
+}
+
+function openPreview(btn) {
+  const subId    = btn.dataset.id;
+  const title    = btn.dataset.title;
+  const filename = btn.dataset.filename;
+  const fileUrl  = btn.dataset.fileurl;
+  const hasData  = btn.dataset.hasdata;
+  document.getElementById('preview-title').textContent = title;
+  document.getElementById('preview-filename').textContent = filename;
+  document.getElementById('preview-modal').classList.remove('hidden');
+
+  const body = document.getElementById('preview-body');
+  const dlBtn = document.getElementById('preview-download-btn');
+  const typeLabel = document.getElementById('preview-type-label');
+
+  body.innerHTML = '<div class="text-slate-400 font-bold text-sm p-10">Loading preview...</div>';
+  dlBtn.classList.add('hidden');
+
+  if (fileUrl) {
+    // ✅ Approved file — file_url నుండి preview
+    const ext = filename.split('.').pop().toLowerCase();
+    typeLabel.textContent = 'Stored file · ' + ext.toUpperCase();
+    dlBtn.href = fileUrl;
+    dlBtn.classList.remove('hidden');
+
+    if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+      body.innerHTML = `<img src="${fileUrl}" class="max-w-full max-h-full object-contain p-4" />`;
+    } else if (ext === 'pdf') {
+      body.innerHTML = `<iframe src="${fileUrl}" class="w-full" style="height:70vh;border:none;"></iframe>`;
+    } else {
+      body.innerHTML = `<div class="text-center p-12">
+        <div class="text-6xl mb-4">📄</div>
+        <div class="font-black text-slate-700 text-lg">${filename}</div>
+        <div class="text-slate-400 text-sm mt-2">Preview not available for this file type</div>
+      </div>`;
+    }
+  } else if (hasData) {
+    // ✅ Pending file — base64 data server నుండి fetch చేస్తాం
+    typeLabel.textContent = 'Pending file — held in database';
+    fetch(`/admin/preview/${subId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          body.innerHTML = `<div class="text-red-500 font-bold p-10">${data.error}</div>`;
+          return;
+        }
+        const src = `data:${data.content_type};base64,${data.file_data}`;
+        const ext = data.filename.split('.').pop().toLowerCase();
+
+        // Download button
+        dlBtn.href = src;
+        dlBtn.download = data.filename;
+        dlBtn.classList.remove('hidden');
+
+        if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+          body.innerHTML = `<img src="${src}" class="max-w-full max-h-full object-contain p-4" />`;
+        } else if (ext === 'pdf') {
+          body.innerHTML = `<iframe src="${src}" class="w-full" style="height:70vh;border:none;"></iframe>`;
+        } else {
+          body.innerHTML = `<div class="text-center p-12">
+            <div class="text-6xl mb-4">📄</div>
+            <div class="font-black text-slate-700 text-lg">${data.filename}</div>
+            <div class="text-slate-400 text-sm mt-2">Preview not available — use Download button</div>
+          </div>`;
+        }
+      })
+      .catch(() => {
+        body.innerHTML = `<div class="text-red-500 font-bold p-10">Failed to load preview.</div>`;
+      });
+  }
+}
+
+function closePreview() {
+  document.getElementById('preview-modal').classList.add('hidden');
+  document.getElementById('preview-body').innerHTML = '';
 }
 </script>
 {% endblock %}
